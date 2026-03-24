@@ -1,0 +1,105 @@
+experiment_name: fineproofs-sft
+trial_name: trial0
+
+seed: 1
+enable_offload: false
+total_train_epochs: 1
+tokenizer_path: ${actor.path}
+
+cluster:
+  n_nodes: 1
+  n_gpus_per_node: 8
+  fileroot: /tmp/areal/experiments
+  name_resolve:
+    type: nfs
+    nfs_record_root: /tmp/areal/name_resolve
+
+allocation_mode: d8p1t1
+
+scheduler:
+  type: null
+
+actor:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: Qwen/Qwen3-4B-Thinking-2507
+  init_from_scratch: false
+  gradient_checkpointing: true
+  dtype: bfloat16
+  attn_impl: kernels-community/flash-attn
+  use_kernels: true
+  mb_spec:
+    max_tokens_per_mb: 45056
+  optimizer:
+    type: adam
+    lr: 3e-5
+    weight_decay: 0.00
+    beta1: 0.9
+    beta2: 0.95
+    eps: 1e-5
+    lr_scheduler_type: cosine
+    gradient_clipping: 1.0
+  scheduling_spec:
+    - task_type: worker
+      port_count: 2
+      gpu: 1
+      mem: 32
+      cmd: python3 -m areal.infra.rpc.rpc_server
+      env_vars: {}
+
+train_dataset:
+  batch_size: 32
+  shuffle: true
+  pin_memory: true
+  num_workers: 4
+  path: lm-provers/FineProofs-SFT
+  config_name: default
+  split: train
+  messages_column: messages
+  max_length: 45056
+  type: sft
+
+# FineProofs-SFT currently uses the train split for both training and evaluation.
+valid_dataset:
+  batch_size: 32
+  pin_memory: true
+  num_workers: 4
+  path: lm-provers/FineProofs-SFT
+  config_name: default
+  split: train
+  messages_column: messages
+  max_length: 45056
+  type: sft
+
+# Utilities
+saver:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: null
+
+recover:
+  mode: disabled
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: 3600
+
+evaluator:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: null
+
+stats_logger:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  wandb:
+    mode: online

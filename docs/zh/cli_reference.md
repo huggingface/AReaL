@@ -621,16 +621,22 @@ https://docs.vllm.ai/en/stable/api/index.html for detailed documentation.
 
 Configuration for training dataset loading and preprocessing.
 
-| Parameter     | Type            | Default      | Description                                                                      |
-| ------------- | --------------- | ------------ | -------------------------------------------------------------------------------- |
-| `path`        | string          | **Required** | Path to the dataset. Can be a local path or a HuggingFace dataset name.          |
-| `type`        | string          | **Required** | Type of training method, e.g., 'sft', 'rl', etc.                                 |
-| `batch_size`  | integer         | `1`          | Batch size for the dataloader                                                    |
-| `shuffle`     | boolean         | `True`       | Whether to shuffle the dataset                                                   |
-| `pin_memory`  | boolean         | `False`      | Pin memory for faster data loading (set True for GPU training)                   |
-| `num_workers` | integer         | `0`          | Number of worker processes for data loading                                      |
-| `drop_last`   | boolean         | `True`       | Drop the last incomplete batch                                                   |
-| `max_length`  | integer \| None | `None`       | Maximum token length of sequences in dataset. Longer sequences are filtered out. |
+| Parameter           | Type            | Default      | Description                                                                             |
+| ------------------- | --------------- | ------------ | --------------------------------------------------------------------------------------- |
+| `path`              | string          | **Required** | Path to the dataset. Can be a local path or a HuggingFace dataset name.                 |
+| `type`              | string          | **Required** | Type of training method, e.g., 'sft', 'rl', etc.                                        |
+| `config_name`       | string \| None  | `None`       | Optional Hugging Face dataset config/subset name forwarded as load_dataset(name=...).   |
+| `split`             | string \| None  | `None`       | Optional dataset split override. When set, it overrides the split passed by the caller. |
+| `messages_column`   | string \| None  | `None`       | Column containing chat-style messages for generic Hugging Face Hub text datasets.       |
+| `prompt_column`     | string \| None  | `None`       | Prompt column for generic Hugging Face Hub text datasets.                               |
+| `completion_column` | string \| None  | `None`       | Completion/target column for generic Hugging Face Hub text datasets.                    |
+| `batch_size`        | integer         | `1`          | Batch size for the dataloader                                                           |
+| `shuffle`           | boolean         | `True`       | Whether to shuffle the dataset                                                          |
+| `pin_memory`        | boolean         | `False`      | Pin memory for faster data loading (set True for GPU training)                          |
+| `num_workers`       | integer         | `0`          | Number of worker processes for data loading                                             |
+| `num_proc`          | integer \| None | `24`         | Maximum number of worker processes for Hugging Face dataset preprocessing.              |
+| `drop_last`         | boolean         | `True`       | Drop the last incomplete batch                                                          |
+| `max_length`        | integer \| None | `None`       | Maximum token length of sequences in dataset. Longer sequences are filtered out.        |
 
 (section-valid-dataset)=
 
@@ -641,16 +647,22 @@ Configuration for validation dataset loading and preprocessing.
 It has different default values with `TrainDatasetConfig`. `shuffle` and `drop_last`
 default to False.
 
-| Parameter     | Type            | Default      | Description                                                                      |
-| ------------- | --------------- | ------------ | -------------------------------------------------------------------------------- |
-| `path`        | string          | **Required** | Path to the dataset. Can be a local path or a HuggingFace dataset name.          |
-| `type`        | string          | **Required** | Type of training method, e.g., 'sft', 'rl', etc.                                 |
-| `batch_size`  | integer         | `1`          | Batch size for the dataloader                                                    |
-| `shuffle`     | boolean         | `False`      | Whether to shuffle the dataset                                                   |
-| `pin_memory`  | boolean         | `False`      | Pin memory for faster data loading (set True for GPU training)                   |
-| `num_workers` | integer         | `0`          | Number of worker processes for data loading                                      |
-| `drop_last`   | boolean         | `False`      | Drop the last incomplete batch                                                   |
-| `max_length`  | integer \| None | `None`       | Maximum token length of sequences in dataset. Longer sequences are filtered out. |
+| Parameter           | Type            | Default      | Description                                                                             |
+| ------------------- | --------------- | ------------ | --------------------------------------------------------------------------------------- |
+| `path`              | string          | **Required** | Path to the dataset. Can be a local path or a HuggingFace dataset name.                 |
+| `type`              | string          | **Required** | Type of training method, e.g., 'sft', 'rl', etc.                                        |
+| `config_name`       | string \| None  | `None`       | Optional Hugging Face dataset config/subset name forwarded as load_dataset(name=...).   |
+| `split`             | string \| None  | `None`       | Optional dataset split override. When set, it overrides the split passed by the caller. |
+| `messages_column`   | string \| None  | `None`       | Column containing chat-style messages for generic Hugging Face Hub text datasets.       |
+| `prompt_column`     | string \| None  | `None`       | Prompt column for generic Hugging Face Hub text datasets.                               |
+| `completion_column` | string \| None  | `None`       | Completion/target column for generic Hugging Face Hub text datasets.                    |
+| `batch_size`        | integer         | `1`          | Batch size for the dataloader                                                           |
+| `shuffle`           | boolean         | `False`      | Whether to shuffle the dataset                                                          |
+| `pin_memory`        | boolean         | `False`      | Pin memory for faster data loading (set True for GPU training)                          |
+| `num_workers`       | integer         | `0`          | Number of worker processes for data loading                                             |
+| `num_proc`          | integer \| None | `24`         | Maximum number of worker processes for Hugging Face dataset preprocessing.              |
+| `drop_last`         | boolean         | `False`      | Drop the last incomplete batch                                                          |
+| `max_length`        | integer \| None | `None`       | Maximum token length of sequences in dataset. Longer sequences are filtered out.        |
 
 (section-cluster)=
 
