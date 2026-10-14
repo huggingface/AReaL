@@ -14,9 +14,7 @@ concurrency:
   group: tag-release-image-${{ github.event.release.tag_name || github.event.inputs.tag }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  packages: write
+permissions: {}
 
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -24,6 +22,7 @@ env:
 
 jobs:
   start-builder:
+    permissions: {}
     name: Start areal-docker-builder instance
     runs-on: ubuntu-latest
     outputs:
@@ -116,6 +115,8 @@ jobs:
             throw new Error(`Timed out waiting for builder runner ${instanceName} to come online.`);
 
   build-and-push-release:
+    permissions:
+      contents: read
     needs:
       - start-builder
     name: Build and push release Docker images
@@ -194,6 +195,7 @@ jobs:
           echo "Commit: ${{ github.sha }}"
 
   stop-builder:
+    permissions: {}
     name: Stop areal-docker-builder instance
     needs:
       - build-and-push-release
