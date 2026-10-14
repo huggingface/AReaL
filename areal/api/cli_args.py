@@ -20,6 +20,11 @@ from areal.engine.fsdp_utils.attn_impl import (
     is_valid_attn_impl,
 )
 from areal.utils import logging, name_resolve, pkg_version
+from areal.utils.attn_impl import (
+    BUILTIN_ATTN_IMPLS,
+    get_attn_impl_validation_error,
+    is_valid_attn_impl,
+)
 from areal.utils.constants import (
     PROX_LOGP_METHOD_RECOMPUTE,
     PROX_LOGP_METHODS_ALL,

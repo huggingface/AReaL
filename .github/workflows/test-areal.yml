@@ -79,19 +79,21 @@ jobs:
       - name: Set instance variables
         id: vars
         run: |
-          echo "instance_name=gcp-runner-${{ github.run_id }}-${{ matrix.variant }}" >> "$GITHUB_OUTPUT"
+          echo "instance_name=gcp-runner-${{ github.run_id }}-${MATRIX_VARIANT}" >> "$GITHUB_OUTPUT"
+        env:
+          MATRIX_VARIANT: ${{ matrix.variant }}
 
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093  # v3.0.0
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db  # v3.0.1
 
       - name: Fetch GitHub runner token
         id: runner-token
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd  # v8.0.0
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         with:
@@ -234,7 +236,7 @@ jobs:
         run: rm -f startup-script.sh runner-token.txt
 
       - name: Wait for runner to register
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd  # v8.0.0
         env:
           INSTANCE_NAME: ${{ steps.vars.outputs.instance_name }}
           GH_PAT: ${{ secrets.GH_PAT }}
@@ -304,7 +306,7 @@ jobs:
       VIRTUAL_ENV: /AReaL/.venv
       EXCLUDE_BACKEND: ${{ matrix.variant == 'sglang' && 'vllm' || 'sglang' }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
       - name: Validate Docker installation
         run: |
@@ -359,12 +361,12 @@ jobs:
         variant: ${{ fromJson(needs.determine-variants.outputs.matrix) }}
     steps:
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v3
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093  # v3.0.0
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v3
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db  # v3.0.1
 
       - name: Delete runner instance
         env:
