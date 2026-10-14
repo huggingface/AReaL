@@ -20,11 +20,6 @@ from areal.engine.fsdp_utils.attn_impl import (
     is_valid_attn_impl,
 )
 from areal.utils import logging, name_resolve, pkg_version
-from areal.utils.attn_impl import (
-    BUILTIN_ATTN_IMPLS,
-    get_attn_impl_validation_error,
-    is_valid_attn_impl,
-)
 from areal.utils.constants import (
     PROX_LOGP_METHOD_RECOMPUTE,
     PROX_LOGP_METHODS_ALL,
@@ -2061,6 +2056,34 @@ class _DatasetConfig:
         default=MISSING,
         metadata={"help": "Type of training method, e.g., 'sft', 'rl', etc."},
     )
+    config_name: str | None = field(
+        default=None,
+        metadata={
+            "help": "Optional Hugging Face dataset config/subset name forwarded as load_dataset(name=...)."
+        },
+    )
+    split: str | None = field(
+        default=None,
+        metadata={
+            "help": "Optional dataset split override. When set, it overrides the split passed by the caller."
+        },
+    )
+    messages_column: str | None = field(
+        default=None,
+        metadata={
+            "help": "Column containing chat-style messages for generic Hugging Face Hub text datasets."
+        },
+    )
+    prompt_column: str | None = field(
+        default=None,
+        metadata={"help": "Prompt column for generic Hugging Face Hub text datasets."},
+    )
+    completion_column: str | None = field(
+        default=None,
+        metadata={
+            "help": "Completion/target column for generic Hugging Face Hub text datasets."
+        },
+    )
     batch_size: int = field(
         default=1, metadata={"help": "Batch size for the dataloader"}
     )
@@ -2076,6 +2099,12 @@ class _DatasetConfig:
     num_workers: int = field(
         default=0, metadata={"help": "Number of worker processes for data loading"}
     )
+    num_proc: int | None = field(
+        default=24,
+        metadata={
+            "help": "Maximum number of worker processes for Hugging Face dataset preprocessing."
+        },
+    )
     drop_last: bool = field(
         default=True, metadata={"help": "Drop the last incomplete batch"}
     )
@@ -2085,6 +2114,19 @@ class _DatasetConfig:
             "help": "Maximum token length of sequences in dataset. Longer sequences are filtered out."
         },
     )
+
+    def __post_init__(self):
+        """Validate generic Hugging Face text dataset schema configuration."""
+        if (self.prompt_column is None) != (self.completion_column is None):
+            raise ValueError(
+                "prompt_column and completion_column must be provided together."
+            )
+        if self.messages_column is not None and self.prompt_column is not None:
+            raise ValueError(
+                "messages_column cannot be combined with prompt_column/completion_column."
+            )
+        if self.num_proc is not None and self.num_proc < 1:
+            raise ValueError("num_proc must be a positive integer or None.")
 
 
 @dataclass
