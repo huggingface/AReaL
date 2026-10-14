@@ -21,8 +21,12 @@ concurrency:
   group: install-test-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   install-test:
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -74,6 +78,8 @@ jobs:
           python -m zipfile -l dist/*.whl | head -20
 
   install-test-cuda-extras:
+    permissions:
+      contents: read
     # Test CUDA extras installation on Linux only (CUDA packages have Linux-only wheels)
     # Note: flash-attn is excluded because it requires CUDA compilation infrastructure
     # which is not available on standard GitHub runners
@@ -122,6 +128,8 @@ jobs:
           "
 
   install-test-docker:
+    permissions:
+      contents: read
     # Test editable installation in Docker runtime image
     # This mirrors the installation method documented for Docker users
     # Only runs on manual dispatch due to large image pull time

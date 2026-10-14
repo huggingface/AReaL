@@ -20,6 +20,7 @@ env:
 
 jobs:
   start-builder:
+    permissions: {}
     name: Start areal-docker-builder instance
     runs-on: ubuntu-latest
     outputs:
@@ -112,6 +113,8 @@ jobs:
             throw new Error(`Timed out waiting for builder runner ${instanceName} to come online.`);
 
   build-and-push-images:
+    permissions:
+      contents: read
     needs:
       - start-builder
     name: Build and push Docker images
@@ -182,6 +185,7 @@ jobs:
     secrets: inherit
 
   promote-images:
+    permissions: {}
     name: Promote ${{ matrix.variant }} test image to dev
     needs:
       - run-tests-sglang
@@ -209,6 +213,7 @@ jobs:
           echo "✅ ${{ matrix.variant }} image promoted from :test-${{ matrix.variant }} to :dev-${{ matrix.variant }}"
 
   cleanup-test-images:
+    permissions: {}
     name: Delete ${{ matrix.variant }} test image from registry
     needs:
       - build-and-push-images
@@ -242,6 +247,7 @@ jobs:
           fi
 
   stop-builder:
+    permissions: {}
     name: Stop areal-docker-builder instance
     needs:
       - start-builder
